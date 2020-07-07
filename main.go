@@ -23,6 +23,9 @@ func main() {
 	// authentice user
 	token := requester.GetToken(username, password, appID, appToken)
 
+	// get user's sub reddits
+	subReddits := requester.GetSubReddits(username, token)
+
 	// print token
-	fmt.Println(token)
+	fmt.Println(subReddits, len(subReddits))
 }
