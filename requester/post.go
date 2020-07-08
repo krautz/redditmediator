@@ -6,10 +6,7 @@ package requester
 
 import (
 	"encoding/json"
-	"io/ioutil"
-	"net/http"
 	"strconv"
-	"time"
 )
 
 /*
@@ -82,9 +79,6 @@ func GetPosts(
 	// create function return value
 	var posts []Post
 
-	// create http client (so it is abble to set requests timeout to 30s)
-	var client = &http.Client{Timeout: 30 * time.Second}
-
 	// create client base url
 	baseURL := "https://oauth.reddit.com/"
 
@@ -103,49 +97,25 @@ func GetPosts(
 			url = url + "&after=" + after + "&count=" + strconv.Itoa(count)
 		}
 
-		// create request object
-		request, err := http.NewRequest("GET", url, nil)
+		// request posts
+		response := request("GET", url, nil, token, username)
 
-		// error while creating the request -> panic
-		if err != nil {
-			panic(err)
-		}
-
-		// set request authorization and user agent headers
-		request.Header.Set("Authorization", "bearer "+token)
-		request.Header.Set("User-Agent", "RedditMediator/0.1 by "+username)
-
-		// do the request
-		response, err := client.Do(request)
-
-		// error while making the request -> panic
-		if err != nil {
-			panic(err)
-		}
-
-		// defer close of request after function finish
-		defer response.Body.Close()
-
-		// parse request response (and treat errors)
-		postsResponse := PostsResponse{}
-		responseBody, readErr := ioutil.ReadAll(response.Body)
-		if readErr != nil {
-			panic(readErr)
-		}
-		readErr = json.Unmarshal(responseBody, &postsResponse)
+		// load request response into json
+		JSONResponse := PostsResponse{}
+		readErr := json.Unmarshal(response, &JSONResponse)
 		if readErr != nil {
 			panic(readErr)
 		}
 
 		// increment count and retrieve after on the post controll
-		increseCount := len(postsResponse.Data.Children)
+		increseCount := len(JSONResponse.Data.Children)
 		postControll[subReddit.Id] = PostControll{
 			Count: count + increseCount,
-			After: postsResponse.Data.After,
+			After: JSONResponse.Data.After,
 		}
 
 		// add each post to the response
-		for _, postChildren := range postsResponse.Data.Children {
+		for _, postChildren := range JSONResponse.Data.Children {
 
 			// process post
 			newPost := processPost(postChildren.Data)
