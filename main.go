@@ -48,4 +48,24 @@ func main() {
 	}
 	fmt.Println()
 	fmt.Println()
+
+	// print progression
+	fmt.Println("Requesting user's sub reddits' posts...")
+
+	// get sub reddits' posts
+	postControll := make(map[string]requester.PostControll)
+	posts := requester.GetPosts(username, subReddits, postControll, 1, "hot", token)
+
+	// print posts
+	for _, post := range posts {
+		fmt.Println("Id:", post.Id)
+		fmt.Println("Name:", post.Name)
+		fmt.Println("SubReddit:", post.SubReddit)
+		fmt.Println("Title:", post.Title)
+		fmt.Println("Type:", post.Type)
+		fmt.Println("Content:", post.Content)
+		fmt.Println()
+	}
+	fmt.Println()
+	fmt.Println()
 }
