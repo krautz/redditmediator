@@ -15,6 +15,14 @@ count - the number of items already seen in this listing. on the html site, the 
 show - optional parameter; if all is passed, filters such as "hide links that I have voted on" will be disabled.
 To page through a listing, start by fetching the first page without specifying values for after and count. The response will contain an after value which you can pass in the next request. It is a good idea, but not required, to send an updated value for count which should be the number of items already fetched.
 
+Caso queira usar limit para não vir muitos subreddits em um request, adicione "?limit=XXX" ao fim da request.
+
+A primeira request não se manda after e não se manda count (pode mandar como 0, que é o valor defualt)
+
+Se uma request vier com resposta com after != null, tem mais dados para pegar, passe "?limit=XXX&count=YYY&after=ZZZ", onde limit é o número de dados que se quer, count são quantos dados já se obteve e after o valor vindo do último request.
+
+Para obter um raw json, utilize "?raw_json=1"
+
 --------------------------------------------------------------------------------
 
 FULLNAMES
@@ -56,12 +64,6 @@ https://www.reddit.com/dev/api/oauth#GET_subreddits_mine_subscriber
 REQUEST CURL:
 curl -i -H "Authorization: bearer <TOKEN>" -A "PostPersister/0.1 by <USERNAME>" "https://oauth.reddit.com/subreddits/mine/subscriber"
 
-Caso queira usar limit para não vir muitos subreddits em um request, adicione "?limit=XXX" ao fim da request.
-
-A primeira request não se manda after e não se manda count (pode mandar como 0, que é o valor defualt)
-
-Se uma request vier com resposta com after != null, tem mais dados para pegar, passe "?limit=XXX&count=YYY&after=ZZZ", onde limit é o número de dados que se quer, count são quantos dados já se obteve e after o valor vindo do último request.
-
 RESPOSTA:
 JSON. Interessante vai estar em "requestResponse.data.children" que é um array com os posts. Cada elemento deste array:
 
@@ -81,12 +83,6 @@ https://www.reddit.com/dev/api/oauth#GET_rising
 REQUEST CURL:
 curl -i -H "Authorization: bearer <TOKEN>" -A "PostPersister/0.1 by <USERNAME>" "https://oauth.reddit.com/r/funny/hot"
 
-Caso queira usar limit para não vir muitos subreddits em um request, adicione "?limit=XXX" ao fim da request.
-
-A primeira request não se manda after e não se manda count (pode mandar como 0, que é o valor defualt)
-
-Se uma request vier com resposta com after != null, tem mais dados para pegar, passe "?limit=XXX&count=YYY&after=ZZZ", onde limit é o número de dados que se quer, count são quantos dados já se obteve e after o valor vindo do último request.
-
 RESPOSTA:
 JSON. Interessante vai estar em "requestResponse.data.children" que é um array com os posts. Cada elemento deste array:
     "name" será o fullname do post
@@ -96,12 +92,13 @@ JSON. Interessante vai estar em "requestResponse.data.children" que é um array 
     "post_hint" será o que o post é: image (gif vai como image) ("image"), link ("link"), vídeo ("rich:video" e "hosted:video") ou self ("self")
     Caso image, obtenha sua url em "url_overridden_by_dest".
     Caso vídeo, há 2 casos:
-        "hosted:video" - vídeo que foi upado para o servidor do reddit. Obtenha sua url em "media.reddit_video.fallback_url".
+        "hosted:video" - vídeo que foi upado para o servidor do reddit. Obtenha sua url em "media.reddit_video.fallback_url". Hosted video terá apenas o vídeo na url em fallback_url, o audio estará no mesmo host com o final /audio (tem que juntar na mão). Caso "media.reddit_video.is_gif" sejá true, então o vídeo não tem áudio mesmo.
         "rich:video" - vídeo hospedado em outro servidor. será de um serviço externo (ex: youtube), obtenha o link em "url"
     Caso link, há 2 casos:
         Link para outro post do reddir: averiguar "crosspost_parent_list[0]" e então analisar o "post_hint" aqui dentro (será um objeto de outro post)
         Link para o mundo externo: não terá o campo "crosspost_parent_list". O link estará em "url_overridden_by_dest".
     Caso self não irá ocorrer, is_self bloqueia primeiro
+    Há casos que não há nem is_self nem post_hint. Estes casos empiricamente (obtendo 20 posts de 24 subreddits) tem apenas uma url em url_overridden_by_dest. Serão salvos como link e precisam de mais investigação
 Para requisitar mais posts, "requestResponse.data.after" terá o after para passar para próxima request
 
 --------------------------------------------------------------------------------
