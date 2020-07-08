@@ -20,12 +20,32 @@ func main() {
 	scanner.Scan()
 	appToken := scanner.Text()
 
+	// print progression
+	fmt.Println("Requesting session token...")
+
 	// authentice user
 	token := requester.GetToken(username, password, appID, appToken)
+
+	// print token
+	fmt.Println("Token:", token)
+	fmt.Println()
+	fmt.Println()
+	fmt.Println()
+
+	// print progression
+	fmt.Println("Requesting user's sub reddits...")
 
 	// get user's sub reddits
 	subReddits := requester.GetSubReddits(username, token)
 
-	// print token
-	fmt.Println(subReddits, len(subReddits))
+	// print sub reddits
+	for _, subReddit := range subReddits {
+		fmt.Println("Id:", subReddit.Id)
+		fmt.Println("Name:", subReddit.Name)
+		fmt.Println("SubReddit:", subReddit.Display_name_prefixed)
+		fmt.Println("Title:", subReddit.Title)
+		fmt.Println()
+	}
+	fmt.Println()
+	fmt.Println()
 }
