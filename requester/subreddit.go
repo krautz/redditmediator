@@ -53,6 +53,7 @@ func GetSubReddits(
 
 	// create client base url and first request url (25 items per request)
 	baseURL := "https://oauth.reddit.com/subreddits/mine/subscriber?limit=25"
+	baseURL += "&raw_json=1"
 	url := baseURL
 
 	// initialize loop variables
