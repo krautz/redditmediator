@@ -4,30 +4,36 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"redditmediator/globals"
 	"redditmediator/requester"
 )
 
 func main() {
-	// get user, password, app id and app token from io
+	// get user, password, app id and app secret from io
 	fmt.Println("Insert user, password, appID and appSecret")
 	scanner := bufio.NewScanner(os.Stdin)
 	scanner.Scan()
-	username := scanner.Text()
+	globals.USERNAME = scanner.Text()
 	scanner.Scan()
 	password := scanner.Text()
 	scanner.Scan()
 	appID := scanner.Text()
 	scanner.Scan()
-	appToken := scanner.Text()
+	appSecret := scanner.Text()
 
 	// print progression
 	fmt.Println("Requesting session token...")
 
 	// authentice user
-	token := requester.GetToken(username, password, appID, appToken)
+	globals.TOKEN = requester.GetToken(
+		globals.USERNAME,
+		password,
+		appID,
+		appSecret,
+	)
 
 	// print token
-	fmt.Println("Token:", token)
+	fmt.Println("Token:", globals.TOKEN)
 	fmt.Println()
 	fmt.Println()
 	fmt.Println()
@@ -36,10 +42,13 @@ func main() {
 	fmt.Println("Requesting user's sub reddits...")
 
 	// get user's sub reddits
-	subReddits := requester.GetSubReddits(username, token)
+	globals.SUB_REDDITS = requester.GetSubReddits(
+		globals.USERNAME,
+		globals.TOKEN,
+	)
 
 	// print sub reddits
-	for _, subReddit := range subReddits {
+	for _, subReddit := range globals.SUB_REDDITS {
 		fmt.Println("Id:", subReddit.Id)
 		fmt.Println("Name:", subReddit.Name)
 		fmt.Println("SubReddit:", subReddit.Display_name_prefixed)
@@ -49,12 +58,16 @@ func main() {
 	fmt.Println()
 	fmt.Println()
 
-	// print progression
-	fmt.Println("Requesting user's sub reddits' posts...")
-
 	// get sub reddits' posts
 	postControll := make(map[string]requester.PostControll)
-	posts := requester.GetPosts(username, subReddits, postControll, 1, "hot", token)
+	posts := requester.GetPosts(
+		globals.USERNAME,
+		globals.SUB_REDDITS,
+		postControll,
+		1,
+		"hot",
+		globals.TOKEN,
+	)
 
 	// print posts
 	for _, post := range posts {
