@@ -3,9 +3,14 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"net/http"
 	"os"
 	"redditmediator/globals"
 	"redditmediator/requester"
+	"redditmediator/responder"
+	"time"
+
+	"github.com/gorilla/mux"
 )
 
 func main() {
@@ -58,27 +63,16 @@ func main() {
 	fmt.Println()
 	fmt.Println()
 
-	// get sub reddits' posts
-	postControll := make(map[string]requester.PostControll)
-	posts := requester.GetPosts(
-		globals.USERNAME,
-		globals.SUB_REDDITS,
-		postControll,
-		1,
-		"hot",
-		globals.TOKEN,
-	)
+	// create mux router and create routes
+	router := mux.NewRouter()
+	router.HandleFunc("/posts/hot", responder.GET_Posts_Hot)
 
-	// print posts
-	for _, post := range posts {
-		fmt.Println("Id:", post.Id)
-		fmt.Println("Name:", post.Name)
-		fmt.Println("SubReddit:", post.SubReddit)
-		fmt.Println("Title:", post.Title)
-		fmt.Println("Type:", post.Type)
-		fmt.Println("Content:", post.Content)
-		fmt.Println()
+	// build and start server
+	server := &http.Server{
+		Handler:      router,
+		Addr:         ":8080",
+		ReadTimeout:  30 * time.Second,
+		WriteTimeout: 30 * time.Second,
 	}
-	fmt.Println()
-	fmt.Println()
+	server.ListenAndServe()
 }
