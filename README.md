@@ -17,8 +17,12 @@ To create a Reddit app: https://www.reddit.com/prefs/apps/
 
 For a detailed installation in any environment check https://golang.org/dl/
 
+Go version used during the project is 1.13.4
+
 Install it (debian):
 ```
+sudo add-apt-repository ppa:longsleep/golang-backports
+sudo apt update
 sudo apt install golang-go
 ```
 
