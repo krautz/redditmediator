@@ -6,6 +6,7 @@ package requester
 
 import (
 	"encoding/json"
+	"fmt"
 	"strconv"
 )
 
@@ -73,7 +74,8 @@ func GetPosts(
 
 	// analyze sort type
 	if sortType != "hot" && sortType != "new" {
-		panic("Invalid sort type")
+		fmt.Println("Invalid sort type. It must be \"hot\" or \"new\"")
+		return []Post{}
 	}
 
 	// create function return value
@@ -97,14 +99,19 @@ func GetPosts(
 			url = url + "&after=" + after + "&count=" + strconv.Itoa(count)
 		}
 
-		// request posts
-		response := request("GET", url, nil, token, username)
+		// request posts. Treat request errors
+		response, err := request("GET", url, nil, token, username)
+		if err != nil {
+			fmt.Println("Error while requesting", url, ":", err)
+			continue
+		}
 
-		// load request response into json
+		// load request response into json. Treat parse errors
 		JSONResponse := PostsResponse{}
 		readErr := json.Unmarshal(response, &JSONResponse)
 		if readErr != nil {
-			panic(readErr)
+			fmt.Println("Error while parsing request response:", readErr)
+			continue
 		}
 
 		// increment count and retrieve after on the post controll
