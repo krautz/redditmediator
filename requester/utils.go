@@ -109,7 +109,7 @@ func request(
 	body *strings.Reader,
 	token string,
 	username string,
-) []byte {
+) ([]byte, error) {
 
 	// create request object
 	var request *http.Request
@@ -120,9 +120,9 @@ func request(
 		request, err = http.NewRequest(method, url, body)
 	}
 
-	// error while creating the request -> panic
+	// error while creating the request -> return error
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	// set request authorization and user agent headers
@@ -132,20 +132,20 @@ func request(
 	// do the request
 	response, err := client.Do(request)
 
-	// error while making the request -> panic
+	// error while making the request -> return error
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	// defer close of request after function finish
 	defer response.Body.Close()
 
-	// parse request response (and treat errors)
+	// parse request response. In case of error return it
 	responseBody, readErr := ioutil.ReadAll(response.Body)
 	if readErr != nil {
-		panic(readErr)
+		return nil, readErr
 	}
 
 	// return bytes of request response
-	return responseBody
+	return responseBody, nil
 }

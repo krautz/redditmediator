@@ -39,14 +39,27 @@ type Error struct {
  * returns -> nothing
  */
 func GET_Posts_Hot(w http.ResponseWriter, r *http.Request) {
+	// print received  request
+	fmt.Println("Received request to get hot posts of each user's sub reddits")
+
 	// get numbers of posts of each sub reddit to retrieve
 	query := r.URL.Query()
 	limit := query.Get("limit")
 	if limit == "" {
 		limit = "3"
 	}
-	// TODO: threat errors
+
+	// convert limit to int. In case of error, log and fail request
 	limitInt, err := strconv.Atoi(limit)
+	if err != nil {
+		fmt.Println("Failing request:", err)
+		w.WriteHeader(http.StatusBadRequest)
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(
+			FailureResponse{Error{"Invalid limit. It must be an integer"}},
+		)
+		return
+	}
 
 	// print progression
 	fmt.Println("Requesting " + limit + " hot posts of each user's sub reddits")
@@ -62,14 +75,10 @@ func GET_Posts_Hot(w http.ResponseWriter, r *http.Request) {
 	)
 
 	// respond request
+	// respond request
 	w.Header().Set("Content-Type", "application/json")
-	response := PostsResponse{posts}
-	responseJSON, err := json.Marshal(response)
-	if err != nil {
-		fmt.Println("ERROR:", err)
-	}
-	w.Write(responseJSON)
-	fmt.Println("Answered user's sub reddits' hot posts")
+	json.NewEncoder(w).Encode(PostsResponse{posts})
+	fmt.Println("Answered user's sub reddits' new posts")
 }
 
 /*

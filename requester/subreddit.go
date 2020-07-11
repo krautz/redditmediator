@@ -6,6 +6,7 @@ package requester
 
 import (
 	"encoding/json"
+	"fmt"
 	"strconv"
 )
 
@@ -57,8 +58,12 @@ func GetSubReddits(
 	// request all sub reddits
 	for after != "" {
 
-		// request sub reddits
-		response := request("GET", url, nil, token, username)
+		// request sub reddits. Fail if any error occurred
+		response, err := request("GET", url, nil, token, username)
+		if err != nil {
+			fmt.Println("Error while requesting", url, ":", err)
+			panic(err)
+		}
 
 		// load request response into json
 		JSONResponse := SubRedditResponse{}
