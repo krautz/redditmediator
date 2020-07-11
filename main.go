@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
 	"net/http"
 	"os"
@@ -14,17 +13,14 @@ import (
 )
 
 func main() {
-	// get user, password, app id and app secret from io
-	fmt.Println("Insert user, password, appID and appSecret")
-	scanner := bufio.NewScanner(os.Stdin)
-	scanner.Scan()
-	globals.USERNAME = scanner.Text()
-	scanner.Scan()
-	password := scanner.Text()
-	scanner.Scan()
-	appID := scanner.Text()
-	scanner.Scan()
-	appSecret := scanner.Text()
+	// get user, password, app id and app secret from environment
+	globals.USERNAME = os.Getenv("REDDIT_MEDIATOR_USER_USERNAME")
+	password := os.Getenv("REDDIT_MEDIATOR_USER_PASSWORD")
+	appID := os.Getenv("REDDIT_MEDIATOR_APP_ID")
+	appSecret := os.Getenv("REDDIT_MEDIATOR_APP_SECRET")
+	if globals.USERNAME == "" || password == "" || appID == "" || appSecret == "" {
+		panic("Please set all environment variables: REDDIT_MEDIATOR_USER_USERNAME, REDDIT_MEDIATOR_USER_PASSWORD, REDDIT_MEDIATOR_APP_ID, REDDIT_MEDIATOR_APP_SECRET")
+	}
 
 	// print progression
 	fmt.Println("Requesting session token...")
