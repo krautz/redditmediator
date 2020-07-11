@@ -62,6 +62,7 @@ func main() {
 	// create mux router and create routes
 	router := mux.NewRouter()
 	router.HandleFunc("/posts/hot", responder.GET_Posts_Hot)
+	router.HandleFunc("/posts/new", responder.GET_Posts_New)
 
 	// build and start server
 	server := &http.Server{
