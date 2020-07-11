@@ -74,10 +74,18 @@ func GET_Posts_Hot(w http.ResponseWriter, r *http.Request) {
 		globals.TOKEN,
 	)
 
-	// respond request
-	// respond request
+	// respond request. If fails to encode response fail request
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(PostsResponse{posts})
+	err = json.NewEncoder(w).Encode(PostsResponse{posts})
+	if err != nil {
+		fmt.Println("Failing request:", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(
+			FailureResponse{Error{"Failed to parse reddit response."}},
+		)
+		return
+	}
 	fmt.Println("Answered user's sub reddits' new posts")
 }
 
@@ -125,8 +133,17 @@ func GET_Posts_New(w http.ResponseWriter, r *http.Request) {
 		globals.TOKEN,
 	)
 
-	// respond request
+	// respond request. If fails to encode response fail request
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(PostsResponse{posts})
+	err = json.NewEncoder(w).Encode(PostsResponse{posts})
+	if err != nil {
+		fmt.Println("Failing request:", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(
+			FailureResponse{Error{"Failed to parse reddit response."}},
+		)
+		return
+	}
 	fmt.Println("Answered user's sub reddits' new posts")
 }
