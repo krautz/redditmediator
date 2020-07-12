@@ -96,6 +96,11 @@ To check available commands:
 go help
 ```
 
+Initializing module (creates `go.mod` and `go.sum` files):
+```
+go mod init
+```
+
 To install new packages:
 ```
 go get <package>
