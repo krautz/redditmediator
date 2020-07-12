@@ -31,6 +31,14 @@ go get github.com/gorilla/mux
 go run main.go
 ```
 
+## Building and publishing container
+
+```
+docker build -t krautzera/redditmediator:vX.Y.Z
+docker login
+docker push krautzera/redditmediator:vX.Y.Z
+```
+
 ## Installing and configuring dependencies
 
 For a detailed installation in any environment check https://golang.org/dl/
