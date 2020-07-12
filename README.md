@@ -3,13 +3,33 @@
 Microservice to interact with reddit.
 Given an user name and password, app ID and secret it gets a session token via OAuth2.
 
-## Creating reddit app
+## Running the project
+
+### Create reddit app
 
 In order to use this you must have a Reddit account and a Reddit app created as `script`.
 
 To create a Reddit account: https://www.reddit.com/
 
 To create a Reddit app: https://www.reddit.com/prefs/apps/
+
+### Set environment variables
+
+The project get credentials from environment variables. For that matter, set the following environment variables on your .bashrc file:
+```
+export REDDIT_MEDIATOR_USER_USERNAME=<YOUR REDDIT USER>
+export REDDIT_MEDIATOR_USER_PASSWORD=<YOUR REDDIT USER PASSWORD>
+export REDDIT_MEDIATOR_APP_ID=<YOUR REDDIT APP ID>
+export REDDIT_MEDIATOR_APP_SECRET=<YOUR REDDIT APP SECRET>
+```
+
+### Executing Reddit Meadiator
+
+```
+cd <GO PROJECT FOLDER>
+go get github.com/gorilla/mux
+go run main.go
+```
 
 ## Installing and configuring dependencies
 
