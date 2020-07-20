@@ -34,9 +34,10 @@ go run main.go
 ## Building and publishing container
 
 ```
-docker build -t krautzera/redditmediator:vX.Y.Z
+docker build -t krautzera/redditmediator:X.Y.Z -t krautzera/redditmediator:latest
 docker login
-docker push krautzera/redditmediator:vX.Y.Z
+docker push krautzera/redditmediator:X.Y.Z
+docker push krautzera/redditmediator:latest
 ```
 
 ## Installing and configuring dependencies
