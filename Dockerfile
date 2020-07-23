@@ -1,34 +1,45 @@
-# Start from the latest golang base image
-FROM golang:latest as builder
+##########################
+###### INSTALL STAGE #####
+##########################
 
-# Set the Current Working Directory inside the container
+# start from the latest golang base image
+FROM golang:latest as INSTALL_STAGE
+
+# set the working directory
 WORKDIR /app
 
-# We want to populate the module cache based on the go.{mod,sum} files.
+# copy dependencies cache files to container
 COPY go.mod ./
 COPY go.sum ./
 
-# Download all dependencies
+# download all dependencies
 RUN go mod download
 
-# Copy the source from the current directory to the Working Directory inside the container
+# copy the source code to container
 COPY . .
 
-# Build the Go app
+# build the app
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main .
 
-######## Start a new stage from scratch #######
+
+########################
+###### BUILD STAGE #####
+########################
+
+# use alpine as base image
 FROM alpine:latest  
 
-# Add Maintainer Info
+# add maintainer info
 LABEL Author="Caio Krauthamer <caio_k@hotmail.com>"
 
+# add certificates
 RUN apk --no-cache add ca-certificates
 
+# set working directory
 WORKDIR /root/
 
-# Copy the Pre-built binary file from the previous stage
-COPY --from=builder /app/main .
+# copy the pre-built binary file from the install stage
+COPY --from=INSTALL_STAGE /app/main .
 
-# Run the binary program produced by `go install`
+# run the binary program
 CMD ["./main"]
