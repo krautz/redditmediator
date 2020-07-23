@@ -1,0 +1,73 @@
+#!/bin/bash -eu
+
+#
+# TRAPS
+#
+trap cleanup EXIT
+trap false INT
+
+
+#
+# GLOBALS
+#
+readonly NAME="redditmediator"
+readonly VERSION=$(cat VERSION)
+readonly TAG="krautzera/${NAME}:${VERSION}"
+readonly TAG_LATEST="krautzera/${NAME}:latest"
+
+readonly FAILURE="Aborted due to failure. No container published."
+readonly SUCCESS="Published on ${TAG} and ${TAG_LATEST}"
+
+#
+# CODE
+#
+function buildContainer ()
+{
+    # report
+    log "Building container"
+
+    # build container
+    docker build --tag ${TAG} --tag ${TAG_LATEST} .
+}
+
+
+function cleanup ()
+{
+    # report result
+    [[ $? == 0 ]] && log "${SUCCESS}" || log "${FAILURE}"
+}
+
+
+function log ()
+{
+    printf "\n%80s\n\n" | tr " " "~"
+    echo $@
+    printf "\n%80s\n\n" | tr " " "~"
+}
+
+
+function publishContainer ()
+{
+    # report
+    log "Publishing container"
+
+    # publish
+    docker push ${TAG}
+    docker push ${TAG_LATEST}
+}
+
+
+function main ()
+{
+    # build container
+    buildContainer
+
+    # publish it to registry
+    publishContainer
+}
+
+
+#
+# ENTRY POINT
+#
+main "$@"
