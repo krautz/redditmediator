@@ -33,12 +33,21 @@ go run main.go
 
 ## Building and publishing container
 
+### From scratch
 ```
 docker build -t krautzera/redditmediator:X.Y.Z -t krautzera/redditmediator:latest
 docker login
 docker push krautzera/redditmediator:X.Y.Z
 docker push krautzera/redditmediator:latest
 ```
+
+### From script
+```
+scripts/build-image
+```
+
+##### Notes
+ - This script retrieves service version from SERVICE. Remember to update it to avoid image overwrite.
 
 ## Installing and configuring dependencies
 
